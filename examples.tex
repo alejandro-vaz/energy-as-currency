@@ -1,0 +1,70 @@
+\section{Example}
+\subsection{Katz centrality}
+\label{subsection:katzce}
+For our example, we will use a 14-node grid, whose exergy exchange matrix is as follows:\begin{figure}[H]\centering\includegraphics[width=0.8\textwidth]{lagrida_latex_editor.png}\end{figure}
+In order to calculate Katz centrality, first we define its constants:
+    $$\alpha = \frac{e}{\pi \lambda_m} \approx 2.83199\cdot10^{-8} J^{-1} \qquad \beta = 10 $$
+and then we compute it (rounded to the nearest integer for display purposes):
+    $$C = (I - \alpha Y)^{-1} \cdot \beta\overline{\mathbf{1}}= \begin{bmatrix}
+11 \\
+26 \\
+22 \\
+101 \\
+48 \\
+18 \\ 
+14 \\
+120 \\
+34 \\
+68 \\
+57 \\
+30 \\
+27 \\
+32
+\end{bmatrix}$$
+With this information, we can represent the graph using a spring layout with node size and color as indicator of their Katz centrality and edge widths proportional to the weights on $Y$:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{example1.png}
+    \caption{Grid graph.}
+\end{figure}
+
+\subsection{Cross-transaction}
+We will imagine now that node $11$ wants to send some energy to node $12$. In order to do so, they have to find an intermediary, since they don't share a direct connection. They can either choose $9$ as intermediary or choose $13$. On a real scenario, they would look at the transaction log, the real exchange history, and promised efficiencies on both paths to assess which one fits more their needs, but we will continue our example with $13$ as intermediary.\\
+Node $11$ creates and signs a transaction that is meant to be received by node $12$, but has to first be signed by $13$, where a decision takes place.\\
+For the transaction to be successfully created, the decision on node $13$ has to pass. We'll first compute the voting power matrix, using the Katz centrality from \ref{subsection:katzce}:
+    $$V = R \circ C^T$$
+\begin{figure}[H]\centering\includegraphics[width=0.8\textwidth]{lagrida_latex_editor (2).png}\end{figure}
+The coefficients of the denominator of the $R$ matrix are shown on each element denominator.\\
+With the voting power matrix, we can now extract the row $13$ which corresponds to the voting power distribution on node $13$:
+\begin{figure}[H]\centering\includegraphics[width=0.8\textwidth]{lagrida_latex_editor (3).png}\end{figure}
+We can reason about the denominator coefficients this way:\begin{itemize}
+    \item Nodes within $0$ hops: $[13]$. Then node $13$ Katz centrality gets divided by $1$.
+    \item Nodes within $1$ hop: $[10, 11, 12, 13]$. Then nodes $10, 11, 12$ get divided by four since there are now four nodes within a hop from $13$. $13$ was already found earlier so its centrality is kept divided by $1$.
+    \item Nodes within $2$ hops: $[7, 9, 10, 11, 12 ,13]$. Then nodes $7, 9$ get divided by six since there are now six nodes within two hops from $13$.
+    \item Continue until all elements have been reached.
+\end{itemize}
+We will round now each centrality to the nearest integer in $V$ and multiply it by the $S_{ci}$ vector (randomly generated, for the sake of the example) via dot product:\\
+    $$r_i = V_{i,:} \cdot S_{ci} $$
+    $$r_{13} = \begin{bmatrix}
+        1 \\ 2 \\ 2 \\ 13 \\ 4 \\ 1 \\ 1 \\ 20 \\ 4 \\ 11 \\ 14 \\ 7 \\ 7 \\ 32
+    \end{bmatrix} \cdot \begin{bmatrix}
+        0 \\ 0 \\ 0 \\ -1 \\ 1 \\ 0 \\ 1 \\ -1 \\ 1 \\ 1 \\ -1 \\ 1 \\ 1 \\ 1
+    \end{bmatrix} = 1 $$
+The decision goes forward since $r_{13} \geq 0$ and it is subsequently broken down into two individual already-signed transactions: from $11$ to $13$ and from $13$ to $12$. As we can see, the voting power does not lean towards the nodes involved heavily, but neither to the furthermost ones. It ensures that nodes with highest Katz centrality are self-sovereign whilst those with lower get coerced only by powerful adjacent nodes.
+\subsection{Group ejection}
+If we suppose nodes $3$ and $7$ disconnect, our graph stops being fully interconnected and adopts the following structure:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{separated.png}
+    \caption{Disconnected graph.}
+\end{figure}
+We can see two big components which aren't interconnected, but we must prove mathematically that they are separated by calculating the multiplicity of zero-valued eigenvalues on the Laplacian of the adjacency matrix:
+    $$\det(L - \lambda I) = 0 $$
+    $$\text{where} \qquad L = D - A$$
+the solutions for $\lambda$ will repeat twice the value $0$ since there are two components on the graph.\\
+In order to select one group and expel the other from the grid, we must first determine the Katz centrality of each node and then sum over the centralities of each node in each group:\\
+    $$C = \begin{bmatrix}
+        11 \\ 17 \\ 15 \\ 29 \\ 29 \\ 17 \\ 13 \\ 103 \\ 38 \\ 90 \\ 73 \\ 50 \\ 43 \\ 54
+    \end{bmatrix}$$
+    $$c_1 = \sum_{i=0}^{6} C_i = 134 \qquad c_2 = \sum_{i=7}^{13} C_i = 451$$
+We can see that the centrality of the second group is much higher, thus it is the component kept.

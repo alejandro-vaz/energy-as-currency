@@ -1,0 +1,82 @@
+%
+%   HEAD
+%
+
+% HEAD -> DOCUMENT
+\documentclass[11pt]{article}
+
+% HEAD -> PACKAGES
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{svg}
+\usepackage{cite}
+\usepackage{float}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,   % font style
+    keywordstyle=\color{blue},    % keywords in blue
+    commentstyle=\color{green!50!black}, % comments in green
+    stringstyle=\color{red},      % strings in red
+    numbers=left,                 % line numbers
+    numberstyle=\tiny,
+    stepnumber=1,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single                  % adds a frame around code
+}
+
+% HEAD -> PAGE LAYOUT
+\geometry{margin=1in} 
+
+
+%
+%   PRELUDE
+%
+
+% PRELUDE -> TITLE
+\title{Energy as Currency: A Physical and Digital Framework for Thermodynamic Economies}
+
+% PRELUDE -> AUTHOR
+\author{Alejandro Luis Vaz Mayato\\
+Independent researcher\\
+\texttt{alejandro.vaz.myt@gmail.com}}
+
+% PRELUDE -> DATE
+\date{\today}
+
+
+%
+%   DOCUMENT
+%
+
+% DOCUMENT -> START
+\begin{document}
+
+% DOCUMENT -> LAYOUT
+\maketitle
+\begin{abstract}
+This paper proposes a decentralized framework for modeling energy exchange in a grid of interconnected nodes. The grid is represented as a graph whose adjacency matrix is derived from a third-rank topology tensor encoding physical connection properties. Energy transfer is described in terms of exergy to account for inefficiencies in transmission. Governance of the grid is achieved through a publicly accessible server that maintains the topology, transaction records, exchange history, and smart contracts.
+
+Nodes may dynamically update their connections, execute signed transactions, and participate in cross-transactions with non-adjacent nodes. Such cross-transactions are resolved through local elections among intermediary nodes based on reduced Katz centrality, with outcomes enforced via smart contracts. Nodes or groups of nodes may be admitted to or ejected from the grid according to their connectivity to the main cluster, defined by aggregate centrality.
+
+The proposed framework incentivizes strong connectivity between nodes while allowing taxation-like effects to emerge naturally from cross-transactions. This model provides a foundation for studying decentralized energy exchange, governance, and incentive structures in networked systems.
+\end{abstract}
+\include{introduction}
+\include{background}
+\include{physical}
+\include{digital}
+\include{rules}
+\include{lifecycle}
+\include{examples}
+\include{conclusion}
+\lstinputlisting[language=Python]{main.py}
+
+% DOCUMENT -> END
+\end{document}

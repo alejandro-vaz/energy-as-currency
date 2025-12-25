@@ -1,0 +1,44 @@
+\section{Rules and transactions}
+\subsection{Connection data update}
+There are three situations in which two nodes can change their connection data:\begin{itemize}
+    \item By freely disconnecting, either of the nodes can disconnect from the link at any given time.
+    \item If connection data has been violated (e.g., exceeded maximum allowed voltage): they must disconnect in order to hold both parties safe and the grid resilient.
+    \item By both nodes cryptographically signing a new connection data object: and submitting it to the server via the public API.
+\end{itemize}
+\subsection{Transaction signing}
+For a transaction to be recorded, the transaction data signed by the sender must be submitted to the server. However, the receiver signature is not mandatory, since nodes are allowed to send energy unilaterally at any time without prior notice, and it wouldn't effectively convey any consent. Transactions act as promises of delivery that become public and stored forever on the transaction log. Nevertheless, the transaction contract can be created by either of the nodes.
+\subsection{Cross-transactions}
+\label{subsection:cross-transactions}
+So far, we've assumed that the nodes involved in a transaction are directly connected with a link. However, some transactions might require intermediary nodes since the sender and the receiver might not be connected directly. These types of transactions are called cross-transactions.\\
+For a cross-transaction to take place, the sender must sign the transaction contract cryptographically, and the intermediary nodes must all comply with being part of the transaction.\\
+In order to avoid single points of failure in long-distance cross-transactions, intermediaries do not hold complete sovereignty over the decision to comply or not. Instead, deterministic, weighted, and local elections take place automatically according to movement rules for each intermediary involved.\\
+To calculate the results of the local elections happening on each node, we must first define the $Y \in \mathbb{R}^{n \times n} $ matrix that indicates the amount of exergy transferred between node $i$ and $j$:
+    $$
+    Y= \begin{bmatrix}
+        Y_{11} & \dots & Y_{1n} \\
+        \vdots & \ddots & \vdots \\
+        Y_{n1} & \dots & Y_{nn}
+    \end{bmatrix}
+    $$
+The data needed to populate $Y$ is obtained directly from the real exchange history stored on the server.\\
+Then we proceed to calculate $\lambda_m$, the maximum eigenvalue of the $Y$ matrix. We will need it to assign a proper $\alpha$ value to calculate Katz centrality.\\
+Consequently, we calculate Katz centrality, assigning values for constants heuristically, only serving as placeholders for future calibration:
+    $$\alpha < \frac{1}{\lambda_m} J^{-1} \to \alpha = \frac{e}{\pi \lambda_m} J^{-1} \to \alpha \approx \frac{0.865}{\lambda_m} J^{-1} \qquad \beta = 10$$
+Here, $\alpha$ has units of $J^{-1}$ since it needs to cancel out joules on $Y$. Afterwards, we apply the formula to obtain $C$ (Katz centrality):
+    $$C = \left( I - \alpha Y^T\right) ^{-1}\cdot \beta \overline{\mathbf{1}}$$
+where $I$ is the identity matrix of dimensions $n \times n$, and $\overline{\mathbf{1}}$ is a vector filled with ones of length $n$.\\
+In order to get the voting power each node has, we will now take the Katz centrality and multiply it by the reduction matrix $R \in \mathbb{R}^{n \times n}$ element-wise. The reduction matrix calculates how much the influence a node exerts over another decays with distance and the number of additional nodes nearby. Each factor in $R$ holds that:
+    $$R_{ij} = \frac{1}{n_d}$$
+where $n_d$ refers to the number of nodes within the amount of hops from node $i$ to node $j$ around $i$. If no path exists from $i$ to $j$ we set $R_{ij} = 0$. The diagonal is always $R_{ii} = 1$.
+Then, the voting power each node $j$ exerts over $i$ becomes:
+    $$V = R \circ C^T$$
+Each element of the $V$ matrix can then be rounded to integer values in order to prevent all smart contracts from being evaluated, so only those nodes whose $V_{ij} \neq 0$ have their rules computed, reducing server load significantly on large grids. Those rules are applied to get a final resolution score:
+    $$r_i = V_{i,:} \cdot S_{ci}$$
+where $S_{ci}$ is the vector containing the result of each smart contract ($S_{ci} \in \{ -1, 0, 1 \}^n $).\\
+The decision goes forward if $r_i \geq 0$, and thus a cross-transaction is signed if each intermediary goes through this process and its $r_i \geq 0$. Later on, the cross-transaction involving intermediaries is broken down into individual local transactions to be appended into the transaction log so debt stays local.\\
+In this type of transactions, intermediaries lend infrastructure to make the transaction possible between sender and receiver, and in exchange, they benefit from delivering real efficiencies higher than those recorded on connection data, whilst keeping the difference to themselves. This behavior is analogous to taxation via fees.\\
+The worst-case efficiency of a cross-transaction is the product of the efficiencies of all involved connections:
+    $$R_{t} = \prod R_{w} \quad \text{for } R_w \text{ of each link involved} $$
+\subsection{Unpaid debt}
+Unpaid debt doesn't get forcefully repaid, nor does the debtor get punished. Instead, the penalties are the records on the transaction log and real exchange history showing unfulfilled exchanges. Nodes with debt history will naturally be excluded for cross-transactions and have very limited trust from others, meaning that their incoming exergy will be low and thus Katz centrality and voting power on the grid.\\
+Since the serial ID of a node cannot change even after reconnection, it ensures that debt stays permanent and publicly accessible via the server API.

@@ -1,0 +1,56 @@
+\section{Physical layer}
+\subsection{Grid structure}
+The grid consists of six types of elements:
+\begin{figure}[H]
+    \centering
+    \includesvg[width=0.8\linewidth]{elements.svg}
+    \caption{Diagram of grid elements}
+    \label{fig:placeholder}
+\end{figure}
+\begin{enumerate}
+    \item Nodes: nodes are the agents on the grid. They store energy, manage connections with other nodes, sign transactions, and exist independently. Each node has a unique serial ID that can't be modified.
+    \item Connections: connections (or "links") represent the physical wiring between two nodes. They are involved in the energy exchange between the nodes on both ends.
+    \item Server access client: a software client is present on each node and is in charge of reporting the node state to the server. It can interact with the server API via encrypted requests and must report frequently in order to stay connected to the grid. The node status report includes how much energy was exchanged on each link (reads from measurements).
+    \item Server: the server is a centralized component with the sole purpose of tracking the status of the grid, making sure each node is connected to it, and allowing nodes to create and route transactions. The server acts as a coordination and verification authority to ensure a consistent state across the grid. The server exposes a public API that nodes can reach with their clients. The server maintains four structural components:\begin{itemize}
+        \item Topology tensor: see \ref{subsection:topology-tensor}.
+        \item Transaction log: a blockchain ledger that records all signed transactions between nodes.
+        \item Exchange history: a blockchain ledger that records real energy exchanged reported from nodes.
+        \item Smart contracts: automatic and deterministic contracts declared by nodes, which evaluate the conditions of a certain situation so that the node expresses agreement, disagreement, or neutrality with decisions regarding the grid. There are two types of smart contracts: join rules and movement rules. We'll expand them on \ref{subsection:node-join} and \ref{subsection:cross-transactions}.
+    \end{itemize}
+    \item Bidirectional measuring instruments: nodes have a measurement instrument on each link they possess. That means that each link is delimited by two measuring instruments from the two nodes it connects. These instruments send their measurements regularly to the server so that the exchange history is kept up to date.
+    \item Bidirectional power control devices: nodes may send energy unilaterally at any time, provided they are not simultaneously receiving energy on the same link. Bidirectional power control devices ensure that energy exchange is bidirectional and voluntary.
+\end{enumerate}
+\subsection{Topology tensor}
+\label{subsection:topology-tensor}
+The topology tensor defines how the grid is interconnected. It is a third-rank tensor of dimensions $n \times n \times 4$ ($T \in \mathbb{R}^{n \times n \times 4}$) where $n$ is the amount on nodes on the graph:
+    $$T = \begin{bmatrix}
+T_{11} & \dots & T_{1n} \\
+\vdots & \ddots & \vdots \\
+T_{n1} & \dots  & T_{nn} 
+\end{bmatrix} \qquad T_{ab} = [V_n, V_e, I_M, R_w] $$
+Each $T_{ab}$ represents the connection data between node $a$ and $b$. For simplicity, we will assume that $T_{abx} = T_{bax} \quad \forall x \in \{0, 1, 2, 3\}$. Theoretically, a directed graph in which links are not symmetric could be used instead of an undirected graph; future research is left to explore this alternative.\\
+Each element $T_{ab}$ is a four-dimensional vector containing the connection data, indicated by its four components:
+\begin{itemize}
+    \item $V_n$: Nominal voltage. Of units $V$ (volts). Indicates the ideal voltage of the link.
+    \item $V_e$: Voltage error. Unitless. Indicates the relative error that the actual voltage readings should accept. We can calculate minimum ($V_m$) and maximum ($V_M$) voltage as follows:
+        $$V_m = V_n \cdot (1 - V_e) $$
+        $$V_M = V_n \cdot (1 + V_e) $$
+    In reality, for $V$ at any given time, it should hold that:
+        $$V_m \leq V \leq V_M$$
+    \item $I_M$: Maximum current. Measured in $A$ (amperes). Refers to the maximum current the instruments should read. For $I$ at any given time:
+        $$I \leq I_M$$
+    \item $R_w$: Worst-case scenario efficiency. Unitless. A precomputed value that indicates how much energy out of the sent will be delivered in the worst case. On a link, it means:
+        $$X \geq E \cdot R_w $$
+        $$u \geq R_w $$
+    This parameter simplifies contractual expectations by providing a guaranteed minimum delivery efficiency.
+\end{itemize}
+\subsection{Adjacency matrix}
+We can compute the adjacency matrix out of the topology tensor by specifying that for a link to truly exist $V_n > 0$ and $V_e > 0$ and $I_M > 0$, and $R_w > 0$. That, numerically, means that on the matrix $A$ of dimensions $n \times n$, element values are assigned as:
+    $$
+    A_{ab} =
+    \begin{cases}
+    1, & \text{if } T_{abx} > 0 \quad \forall x \in \{0, 1, 2, 3\}, \\
+    0, & \text{otherwise}.
+    \end{cases}
+    $$
+This adjacency matrix is also symmetric. We will use the adjacency matrix in situations where we want to know if nodes on the grid are connected for energy exchange or not.

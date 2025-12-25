@@ -1,0 +1,14 @@
+\section{Introduction}
+\subsection{Motivation}
+In this paper we propose a framework that integrates physical energy, economics and digital accounting to manage energy grids in which energy is the currency itself. The framework handles a grid of semi-autonomous nodes that exchange energy between them and rule over common decisions.\\
+Current economic models integrating energy fail to integrate graph theory for representing the economy, lack self-governance capabilities and don't implement blockchain technology for immutable, auditable global accounting.\\
+This framework proposes a grid of nodes that freely exchange energy in between them, and sign transactions for promised delivery. It accounts for the physical state of the grid as well ejection of nodes, and union of new ones. It proposes a model for local elections in which Katz centrality is reduced with a matrix that models influence decay from crowding.\\
+It allows for emergent phenomena such as taxation on cross-transactions, and strong linking between nodes for increased voting power.
+\subsection{Summary}
+The grid is a system of interconnected nodes that exchange energy. Since energy transfer is not perfectly efficient, exergy is used to denote usable energy, defined as energy weighted by efficiency. The physical structure of the grid is represented by a third-rank topology tensor, from which the adjacency matrix of the corresponding graph is derived.\\
+The grid consists of six components: nodes, connections, server access clients, a server, measuring instruments, and bidirectional power control devices. The server acts as a centralization mechanism that enables self-governance of the grid.\\
+The server exposes a public API and stores four modules: the topology tensor, the transaction log (blockchain ledger), the exchange history (blockchain ledger), and smart contracts.\\
+Nodes may update their connection data by disconnecting freely, when existing connection data is violated, or by jointly signing a new connection object with another node. Transactions must be signed only by the sender.\\
+Cross-transactions occur between nodes without direct connections. In such cases, intermediary nodes participate in local elections based on reduced Katz centrality, and smart contracts imposed by the involved nodes are executed to submit each node’s vote.\\
+Nodes or groups of nodes may be ejected from the grid if they are disconnected from the main cluster, defined as the connected component with the highest aggregate Katz centrality. Nodes may also join the grid through local elections analogous to those used for cross-transactions.\\
+Overall, the grid provides a framework that rewards strong connectivity between nodes, while taxation emerges naturally from cross-transactions.

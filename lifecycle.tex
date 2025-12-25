@@ -1,0 +1,13 @@
+\section{Node life}
+\subsection{Group ejection}
+At all times, the grid must be fully interconnected, so removing groups and nodes not connected to the main cluster is a task that should be run every time the adjacency matrix changes. In order to first calculate if there are disconnected components, we will calculate the multiplicity of zero-valued eigenvalues of the Laplacian by solving:
+    $$\det(L - \lambda I) = 0$$
+    $$\text{where}\qquad L = D - A $$
+If the amount of zero-valued eigenvalues is different than one, the graph is not fully interconnected, and it's divided into components. To make sure that the graph becomes a single cluster once again, the group with the highest sum of Katz centrality on all its nodes is kept, and all others are ejected from the grid.
+    $$C = \left( I - \alpha Y^T \right) ^{-1}\cdot\beta\overline{1}$$
+To do so, the server must catalog each node into which component it is part of by selecting a node and traversing its connections recursively until no new nodes are connected, and then repeating the same process starting with a node that's not already in any previous groups until all nodes are cataloged. Finally, the sum of the Katz centralities of the nodes of each group is calculated, and that component which scores higher is kept, whilst all the others are ejected.
+\subsection{Node union}
+\label{subsection:node-join}
+For a node to join, a local decision evaluated at the node where the new node wants to connect must pass. As we've explored in {}, the result in $r_i$ must be equal to or greater than zero:
+    $$r_i = \left( R \circ \left(\left(I - \alpha Y^T\right)^{-1} \cdot \beta \overline{\mathbf{1}}  \right)^{T} \right)_{i,:} \cdot S_{ci} $$
+The smart contracts to be executed (whose result is on $S_{ci}$) are provided this time with data about the decision of joining the new node that is applying for. If it is accepted, the new node is appended to the topology tensor, the adjacency matrix is recalculated, and the node is taken into consideration on the $Y$ matrix for future decisions.

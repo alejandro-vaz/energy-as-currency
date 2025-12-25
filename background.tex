@@ -1,0 +1,60 @@
+\section{Background}
+\subsection{Economy workings}
+In this paper, we explore a hypothetical economic framework in which energy serves as the primary currency. Energy, serving as the medium of exchange, would be stored physically and transferred over the grid, without relying on energy-backed tokens, as proposed in previous work\cite{mihaylov2014nrgcoin}. In this framework, "money" is literally energy.\\
+We have chosen energy as the currency rather than tokens backed by it or other representations, because work is defined as a mechanism for transferring energy. That implies that as long as there's usable energy, work can be performed. It ties real-world value (of work) to the currency itself. Traditional currencies are backed by gold or other assets that preserve value, whereas energy is inherently tied to real-world utility fundamentally\cite{georgescu1971entropy}.\\
+There are six magnitudes to which we will refer in this paper:\begin{itemize}
+    \item Energy ($E$): energy is the currency in our system. Strictly, electrical energy is one form of internal energy, but for our model, we consider them equivalent since we will only track the electrical component of internal energy. Energy is measured in $J$ (Joules), which is equivalent to $kg\cdot m^{2}\cdot s^{-2}$ in SI units.
+    \item Exergy ($X$): a state variable defined by the model that symbolizes the amount of usable energy on the grid. Not all energy will be circulating on the economy, since nodes can retain energy, so energy on circulation is referred to as exergy.
+        $$0 \leq X \leq E$$
+    It is measured on $J$. Future research ought to tighten the definition of exergy on what "energy in circulation" stands by mathematically. Although the term "exergy" originates in thermodynamics, here it is used as a model-specific quantity denoting energy on circulation.
+    \item Usability index ($u$): is defined as the ratio between exergy and total energy. It conveys how "usable" the energy available is.
+        $$u = \frac{X}{E}$$
+        $$\text{where} \quad 0 \leq u \leq 1 $$
+    It is a unitless magnitude.
+    \item Economic entropy ($S$): economic entropy exhibits behavior analogous to thermodynamic entropy. Since calculating real thermodynamic entropy would be nearly impossible in a decentralized grid, we will use a simpler definition:
+        $$S = -E\ln{u}$$
+    This definition is inspired by entropy-like behavior and preserves monotonicity properties analogous to the second law under certain conditions\cite{smith2008thermoecon}.\\
+    Economic entropy has the same units as energy for our purposes. In real thermodynamics, entropy has units of $J/K$, but we can't measure a temperature factor in our decentralized grid, so we've excluded it. Future research can update this definition if needed.
+    \item Work ($W$): work refers to a mechanism by which energy is transferred. In this framework, it is identified with net energy transfer, mathematically defined as        $$W = \Delta E$$
+    Since work derives its units from energy, its units are also $J$.
+    \item Power ($P$): power is defined as the variation of energy per unit time. It differs from work in that the time elapsed between the two measurements is factored in. There are two ways of measuring power: over a time frame, and in an instant.\\
+    For measuring average power over a certain time frame, we compute
+        $$P_\tau = \frac{\Delta E}{\Delta t}$$
+    However, this definition is narrow in the sense that it tells us the average power but not the exact power at each specific moment.\\
+    On the other hand, instantaneous power is obtained by letting $\Delta t$ approach $0$, so that $\Delta E$ also approaches $0$, and the ratio becomes the slope of the tangent linear function, which represents power.
+        $$P = \lim_{\Delta t \to 0} \frac{\Delta E}{\Delta t} = \frac{\text{d}E}{\text{d}t} = \dot{E}$$
+    We will use this latter definition of power as the derivative of energy with respect to time throughout this paper.
+    Power is measured in $J/s$, equivalent to $kg\cdot m^{2}\cdot s^{-3}$, which is defined as the watt ($W$, not to be confused with work).
+\end{itemize}
+We'll be proposing a grid of interconnected nodes that transfer energy among themselves. On this grid, energy functions solely as the medium of exchange, though in real-world applications, its role as a commodity must also be considered.
+\subsection{Laws}
+The grid economy is restricted by the laws that the currency (energy) naturally imposes, the laws of thermodynamics. Rather than restrict the economy, these laws maintain it sustainable by limiting currency availability and usefulness.\\
+The two laws we will be focusing on are: \begin{itemize}
+    \item 1º law: establishes that the change in the internal energy of a closed system equals the heat added minus the work done by it.
+        $$\Delta U = Q - W$$
+    This law is often called the energy conservation principle. In practice, it means that the energy of a closed system stays the same unless heat or work cross the system boundary.
+    \item 2º law: indicates that the entropy of any closed system that does not interact with any other external system always increases
+        $$\text{d}S_{\text{closed}} \geq 0$$
+    It means that if our system is isolated, the entropy of it can only increase, and thus the global usability index decreases because it is now in a state with higher entropy. For that reason, entropy inversely correlates with economic utility.
+\end{itemize}
+These laws enforce subtle limitations within the model, arising from the laws of thermodynamics: \begin{itemize}
+    \item Inflation and deflation (by 1º law): energy cannot be arbitrarily created within the system, whereas fiat money can be issued independently of underlying physical value. The first law enforces that energy has to be obtained or dissipated (which means merely transferred to an outer system), and it is always backed by its ability to do work.\\
+    Thus, inflation and deflation become controlled processes that emerge out of the grid shifting its capabilities. On our grid, the inflation/deflation rate becomes
+        $$\pi_{\tau} = \frac{\Delta E}{E - \Delta E} \qquad \pi = \frac{\dot{E}}{E} = \frac{P}{E} $$
+    \item Capital speculation (by 2º law): if the economy does not suffer inflation or deflation ($\pi = 0$, $E$ is constant), speculation is only limited to the extent that economic entropy changes (economic entropy can actually decrease locally on the grid because it's an open system).\\
+    This is because speculation only takes place when energy is less capable of useful work. The speculation restriction can thus be generalized to "speculation becomes profitable on average whenever usability decreases."
+        $$\text{Average speculation profitable whenever}\qquad \Delta u < 0$$
+    We can also define an adjusted inflation rate that takes exergy instead of energy:
+        $$i_{\tau} = \frac{\Delta X}{X - \Delta X} \qquad i = \frac{\dot{X}}{X}$$
+    and thus:
+        $$\text{Speculation profitable whenever}\qquad \dot{u}<0$$
+        $$\dot{u} < 0$$
+        $$\frac{\text{d}}{\text{d}t}\frac{X}{E} < 0$$
+        $$\frac{\dot{X}E -X\dot{E}}{E^2}<0  $$
+        $$\dot{X}E - X\dot{E} <0  $$
+        $$\dot{X}E < X\dot{E}  $$
+        $$\frac{\dot{X}}{X} < \frac{\dot{E}}{E} $$
+        $$\pi > i$$
+        $$\text{Speculation profitable whenever}\qquad \pi > i $$
+    In an economy in which speculation is profitable, the usability is decreasing. It doesn't necessarily have to mean that the energy or exergy on the grid is decreasing, but that energy is increasing proportionately faster than exergy.
+\end{itemize}

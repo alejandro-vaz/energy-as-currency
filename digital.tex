@@ -1,0 +1,30 @@
+\section{Digital layer}
+\subsection{Server properties}
+Having a centralized server is inherently risky for the framework since it becomes a single point of failure on which the system depends. For that reason, the server must be equipped with additional safety measures, both physically and digitally: \begin{itemize}
+    \item A VPN combined with anycast routing: in order to reduce exposure, filter traffic, and improve resilience against attacks to the network.
+    \item Not connected to the grid: the server's power supply should be administratively independent from the grid, preventing nodes from exerting economic or operational leverage over it.
+    \item Able to clone and relocate itself: having multiple synchronized mirrors in case the main instance fails. Network traffic must also be carefully managed and redirected. Mirrors would remain synchronized via a consensus protocol, and traffic is redirected automatically to backup active instances of the server in case of failure of the main instance.
+    \item Possess a good firewall: to defend itself against possible DoS or DDoS attacks, among other digital threats, reducing the likelihood of service disruption.
+\end{itemize}
+These measures ensure the server is less likely to be taken down, and in the worst case, that mirrors can keep centralized accounting operative.
+\subsection{Modules}
+The server holds four important modules describing the grid: the topology tensor, the transaction log, the exchange history, and the smart contracts. Out of them, the transaction log and exchange history are cryptographically signed and immutable blockchain ledgers that ensure consensus and auditability. These modules can be accessed via the server's public API. Each module is stored differently: \begin{itemize}
+    \item Topology tensor: it is stored as shown in \ref{subsection:topology-tensor}.
+    \item Transaction log: a blockchain ledger that stores the transactions signed between nodes. It is thus immutable. This module exists on-server just to hold a full copy of the ledger, since smart contracts may need to access it upon execution.
+    \item Exchange history: blockchain ledger that records the reported energy exchanges from node instruments. Nodes must report regularly in order to stay connected to the grid, ensuring inactive nodes are expelled, and exchange data isn't held by nodes.
+    \item Smart contracts: context-aware smart contracts that nodes send to the server so that they express their stance about decisions ahead-of-time instead of holding regular elections. Each of these smart contracts is a deterministic, side-effect-free, computationally-bounded function that's evaluated when a decision needs to be taken:
+        \begin{algorithm}[H]
+        \caption{Smart Contract Decision Procedure}
+        \begin{algorithmic}[1]
+        \Require Decision data $decision$
+        \Require Topology tensor $topology$
+        \Require Transaction log $transactions$
+        \Require Exchange history $exchange$
+        \Ensure Decision result in $\{\textbf{-1}, \textbf{0}, \textbf{1}\}$
+        
+        \Function{SmartContract}{$decision, topology, transactions, exchange$}
+          \State \Return decision outcome
+        \EndFunction
+        \end{algorithmic}
+        \end{algorithm}
+\end{itemize}
