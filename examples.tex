@@ -33,10 +33,10 @@ We will imagine now that node $11$ wants to send some energy to node $12$. In or
 Node $11$ creates and signs a transaction that is meant to be received by node $12$, but has to first be signed by $13$, where a decision takes place.\\
 For the transaction to be successfully created, the decision on node $13$ has to pass. We'll first compute the voting power matrix, using the Katz centrality from \ref{subsection:katzce}:
     $$V = R \circ C^T$$
-\begin{figure}[H]\centering\includegraphics[width=0.8\textwidth]{lagrida_latex_editor (2).png}\end{figure}
+\begin{figure}[H]\centering\includegraphics[width=0.8\textwidth]{lagrida_latex_editor2.png}\end{figure}
 The coefficients of the denominator of the $R$ matrix are shown on each element denominator.\\
 With the voting power matrix, we can now extract the row $13$ which corresponds to the voting power distribution on node $13$:
-\begin{figure}[H]\centering\includegraphics[width=0.8\textwidth]{lagrida_latex_editor (3).png}\end{figure}
+\begin{figure}[H]\centering\includegraphics[width=0.8\textwidth]{lagrida_latex_editor3.png}\end{figure}
 We can reason about the denominator coefficients this way:\begin{itemize}
     \item Nodes within $0$ hops: $[13]$. Then node $13$ Katz centrality gets divided by $1$.
     \item Nodes within $1$ hop: $[10, 11, 12, 13]$. Then nodes $10, 11, 12$ get divided by four since there are now four nodes within a hop from $13$. $13$ was already found earlier so its centrality is kept divided by $1$.
